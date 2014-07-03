@@ -13,6 +13,7 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
 
 using namespace std;
 using namespace cv;
@@ -54,73 +55,70 @@ void writeSURF(const char* filename, vector<KeyPoint> imageKeypoints, cv::Mat im
 }
 
 int main(int argc, char** argv) {
-
-    const char* imageFile = argc == 3 ? argv[1] : "/Users/ryohei/gitrepos/pirafu/resized/チャーハン/1.jpg";
-    const char* surfFile  = argc == 3 ? argv[2] : "/Users/ryohei/gitrepos/pirafu/resized/チャーハン/1.surf";
     
+    for (int j = 0; j < 2; j ++){
+        for (int i = 1; i <= 64; i++){
+            char imageFile[100];
+            char surfFile[100];
+            const char* dirname = j ? "チャーハン": "ピラフ";
 
-    // SURF抽出用に画像をグレースケールで読み込む
-    IplImage* grayImage = cvLoadImage(imageFile, CV_LOAD_IMAGE_GRAYSCALE);
-    
-    if (!grayImage) {
-        cerr << "cannot find image file: " << imageFile << endl;
-        return -1;
+            sprintf(imageFile, "/Users/ryohei/gitrepos/pirafu/resized/%s/%d.jpg", dirname, i);
+            sprintf(surfFile, "/Users/ryohei/gitrepos/pirafu/surf/%s/%d.surf", dirname, i);
+            
+            // SURF抽出用に画像をグレースケールで読み込む
+            IplImage* grayImage = cvLoadImage(imageFile, CV_LOAD_IMAGE_GRAYSCALE);
+            
+            if (!grayImage) {
+                cerr << "cannot find image file: " << imageFile << endl;
+                return -1;
+            }
+            
+            // キーポイント描画用にカラーでも読み込む
+            IplImage* colorImage = cvLoadImage(imageFile, CV_LOAD_IMAGE_COLOR);
+            if (!colorImage) {
+                cerr << "cannot find image file: " << imageFile << endl;
+                return -1;
+            }
+            
+            std::vector<KeyPoint> keypoints;
+            cv::Mat descriptors;
+            
+            cv::SurfDescriptorExtractor extractor;
+            
+            cv::SURF calcSURF(500);
+            calcSURF.detect(grayImage, keypoints);
+            calcSURF.compute(grayImage, keypoints, descriptors);
+            
+            // SURFをファイルに出力
+            writeSURF(surfFile, keypoints, descriptors);
+            
+        }
     }
 
-    // キーポイント描画用にカラーでも読み込む
-    IplImage* colorImage = cvLoadImage(imageFile, CV_LOAD_IMAGE_COLOR);
-    if (!colorImage) {
-        cerr << "cannot find image file: " << imageFile << endl;
-        return -1;
-    }
-
-//    CvMemStorage* storage = cvCreateMemStorage(0);
-//    CvSeq* imageKeypoints = 0;
-//    CvSURFParams params = cvSURFParams(500, 1);
-
-// 画像からSURFを取得
-//    cvExtractSURF(grayImage, 0, &imageKeypoints, &imageDescriptors, storage, params);
-    
-//    SURF calcSURF = SURF(500);
-//    SURF::operator()(grayImage);
-
-    std::vector<KeyPoint> keypoints;
-    cv::Mat descriptors;
-//    DescriptorExtractor* extractor = cv::DescriptorExtractor::create("SURF");
-//    extractor->compute(grayImage, keypoints, descriptors);
-    
-    cv::SurfDescriptorExtractor extractor;
-    
-    cv::SURF calcSURF(500);
-    calcSURF.detect(grayImage, keypoints);
-    calcSURF.compute(grayImage, keypoints, descriptors);
-
-    // SURFをファイルに出力
-    writeSURF(surfFile, keypoints, descriptors);
-
-    vector<KeyPoint>::iterator it = keypoints.begin();
-    // 画像にキーポイントを描画
-    while (it != keypoints.end()) {
-        KeyPoint point = *it;
-        CvPoint center;  // キーポイントの中心座標
-        int radius;      // キーポイントの半径
-        center.x = cvRound(point.pt.x);
-        center.y = cvRound(point.pt.y);
-        radius = cvRound(point.size * 1.2 / 9.0 * 2.0);
-        cvCircle(colorImage, center, radius, cvScalar(0,255,255), 1, 8, 0);
-        ++it;
-    }
-
-    cvNamedWindow("SURF");
-    cvShowImage("SURF", colorImage);
-    cvWaitKey(0);
-
-    // 後始末
-    cvReleaseImage(&grayImage);
-    cvReleaseImage(&colorImage);
+//    vector<KeyPoint>::iterator it = keypoints.begin();
+//    // 画像にキーポイントを描画
+//    while (it != keypoints.end()) {
+//        KeyPoint point = *it;
+//        CvPoint center;  // キーポイントの中心座標
+//        int radius;      // キーポイントの半径
+//        center.x = cvRound(point.pt.x);
+//        center.y = cvRound(point.pt.y);
+//        radius = cvRound(point.size * 1.2 / 9.0 * 2.0);
+//        cvCircle(colorImage, center, radius, cvScalar(0,255,255), 1, 8, 0);
+//        ++it;
+//    }
+//
+//    cvNamedWindow("SURF");
+//    cvShowImage("SURF", colorImage);
+//    cvWaitKey(0);
+//
+//    // 後始末
+//    cvReleaseImage(&grayImage);
+//    cvReleaseImage(&colorImage);
 //    cvClearSeq(imageKeypoints);
 //    cvClearSeq(imageDescriptors);
 //    cvReleaseMemStorage(&storage);
+
     cvDestroyAllWindows();
 
     return 0;
