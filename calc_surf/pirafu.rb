@@ -1,5 +1,4 @@
-
-require 'google_custom_search_api'
+require 'google-search'
 
 
 ["チャーハン", "ピラフ"].each do |word|

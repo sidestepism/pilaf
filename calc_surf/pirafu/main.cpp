@@ -56,14 +56,14 @@ void writeSURF(const char* filename, vector<KeyPoint> imageKeypoints, cv::Mat im
 
 int main(int argc, char** argv) {
     
-    for (int j = 0; j < 2; j ++){
-        for (int i = 1; i <= 64; i++){
+    for (int j = 0; j < 1; j ++){
+        for (int i = 1; i <= 440; i++){
             char imageFile[100];
             char surfFile[100];
-            const char* dirname = j ? "チャーハン": "ピラフ";
+            const char* dirname = j ? "チャーハン": "能年玲奈";
 
-            sprintf(imageFile, "/Users/ryohei/gitrepos/pirafu/resized/%s/%d.jpg", dirname, i);
-            sprintf(surfFile, "/Users/ryohei/gitrepos/pirafu/surf/%s/%d.surf", dirname, i);
+            sprintf(imageFile, "/Users/ryohei/gitrepos/pirafu/resized-bing/%s/%d.jpg", dirname, i);
+            sprintf(surfFile, "/Users/ryohei/gitrepos/pirafu/surf-bing/%s/%d.surf", dirname, i);
             
             // SURF抽出用に画像をグレースケールで読み込む
             IplImage* grayImage = cvLoadImage(imageFile, CV_LOAD_IMAGE_GRAYSCALE);
@@ -91,7 +91,8 @@ int main(int argc, char** argv) {
             
             // SURFをファイルに出力
             writeSURF(surfFile, keypoints, descriptors);
-            
+
+            cvReleaseImage(&grayImage);
         }
     }
 

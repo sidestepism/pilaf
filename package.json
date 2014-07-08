@@ -1,0 +1,23 @@
+{
+  "name": "pirafu",
+  "version": "0.0.0",
+  "description": "",
+  "main": "crawler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sidestepism/pilaf.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sidestepism/pilaf/issues"
+  },
+  "homepage": "https://github.com/sidestepism/pilaf",
+  "dependencies": {
+    "async": "^0.9.0",
+    "request": "^2.37.0"
+  }
+}
